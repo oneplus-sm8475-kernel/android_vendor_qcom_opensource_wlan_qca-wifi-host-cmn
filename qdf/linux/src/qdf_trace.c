@@ -4415,7 +4415,11 @@ qdf_export_symbol(qdf_get_pidx);
 #ifdef CONFIG_SLUB_DEBUG
 void __qdf_bug(void)
 {
-	BUG();
+//#ifndef OPLUS_BUG_DEBUG
+//	BUG();
+//#else
+pr_info("%s: need to enter into wlan dump, but skip as WAR.\n", __func__);
+//#endif /* OPLUS_BUG_DEBUG */
 }
 qdf_export_symbol(__qdf_bug);
 #endif /* CONFIG_SLUB_DEBUG */

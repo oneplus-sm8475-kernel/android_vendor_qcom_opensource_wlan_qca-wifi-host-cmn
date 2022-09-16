@@ -9370,6 +9370,17 @@ static QDF_STATUS send_unit_test_cmd_tlv(wmi_unified_t wmi_handle,
 	wmi_debug("VDEV ID: %d MODULE ID: %d TOKEN: %d",
 		 cmd->vdev_id, cmd->module_id, cmd->diag_token);
 	wmi_debug("%d num of args = ", wmi_utest->num_args);
+
+	#ifdef OPLUS_BUG_STABILITY
+	if (cmd->module_id == 72 && wmi_utest != NULL
+		&& wmi_utest->num_args == 2
+		&& wmi_utest->args[0] == 533) {
+		wmi_err("just a test command: setUnitTestCmd 0x48 2 533, reject");
+		dump_stack();
+		return QDF_STATUS_E_NOMEM;
+	}
+	#endif /* OPLUS_BUG_STABILITY */
+
 	for (i = 0; (i < wmi_utest->num_args && i < WMI_UNIT_TEST_MAX_NUM_ARGS); i++) {
 		unit_test_cmd_args[i] = wmi_utest->args[i];
 		wmi_debug("%d,", wmi_utest->args[i]);

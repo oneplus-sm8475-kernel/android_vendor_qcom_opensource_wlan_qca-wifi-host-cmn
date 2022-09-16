@@ -1082,8 +1082,10 @@ struct dp_tx_desc_s *dp_tx_prepare_desc_single(struct dp_vdev *vdev,
 	}
 
 	/* Packets marked by upper layer (OS-IF) to be sent to FW */
-	if (dp_tx_is_nbuf_marked_exception(soc, nbuf))
+	if (dp_tx_is_nbuf_marked_exception(soc, nbuf)) {
+		dp_info("Frame marked toFW=1");
 		is_exception = 1;
+	}
 	/*
 	 * For special modes (vdev_type == ocb or mesh), data frames should be
 	 * transmitted using varying transmit parameters (tx spec) which include
@@ -1585,23 +1587,16 @@ dp_tx_ring_access_end_wrapper(struct dp_soc *soc,
 }
 #else
 
-#ifdef DP_POWER_SAVE
-void
-dp_tx_ring_access_end_wrapper(struct dp_soc *soc,
-			      hal_ring_handle_t hal_ring_hdl,
-			      int coalesce)
-{
-	if (hif_system_pm_state_check(soc->hif_handle)) {
-		dp_tx_hal_ring_access_end_reap(soc, hal_ring_hdl);
-		hal_srng_set_event(hal_ring_hdl, HAL_SRNG_FLUSH_EVENT);
-		hal_srng_inc_flush_cnt(hal_ring_hdl);
-	} else {
-		dp_tx_ring_access_end(soc, hal_ring_hdl, coalesce);
-	}
-}
-#endif
-
-static inline int dp_get_rtpm_tput_policy_requirement(struct dp_soc *soc)
+/**
+ * dp_cce_classify() - Classify the frame based on CCE rules
+ * @vdev: DP vdev handle
+ * @nbuf: skb
+ *
+ * Classify frames based on CCE rules
+ * Return: bool( true if classified,
+ *               else false)
+ */
+static bool dp_cce_classify(struct dp_vdev *vdev, qdf_nbuf_t nbuf)
 {
 	return 0;
 }
