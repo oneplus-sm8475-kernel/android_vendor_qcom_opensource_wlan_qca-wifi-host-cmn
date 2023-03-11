@@ -1082,8 +1082,10 @@ struct dp_tx_desc_s *dp_tx_prepare_desc_single(struct dp_vdev *vdev,
 	}
 
 	/* Packets marked by upper layer (OS-IF) to be sent to FW */
-	if (dp_tx_is_nbuf_marked_exception(soc, nbuf))
+	if (dp_tx_is_nbuf_marked_exception(soc, nbuf)) {
+		dp_info("Frame marked toFW=1");
 		is_exception = 1;
+	}
 	/*
 	 * For special modes (vdev_type == ocb or mesh), data frames should be
 	 * transmitted using varying transmit parameters (tx spec) which include
